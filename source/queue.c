@@ -1,4 +1,4 @@
-#include "orders.h"
+#include "queue.h"
 #include "elev.h"
 
 void insert_order(elev_button_type_t button, int floor){
@@ -29,12 +29,12 @@ void check_floor(int floor, elev_motor_direction_t dir){
 			}
 		}
 		if (sum==0){
-			//sett retning lik null
+			elev_set_motor_direction(DIRN_STOP);
 		}
 	}
 	if(dir==DIRN_DOWN){
 		if(orderqueue[floor][BUTTON_CALL_UP] || orderqueue[floor][BUTTON_COMMAND]){
-			//her kaller vi stopp funksjonen vår!!
+			elev_set_motor_direction(DIRN_STOP);
 		}
 		int sum=0;
 		for(int i=floor-1, i>0, i--){
@@ -43,12 +43,12 @@ void check_floor(int floor, elev_motor_direction_t dir){
 			}
 		}
 		if (sum==0){
-			//sett retning lik null
+			elev_set_motor_direction(DIRN_STOP);
 		}
 
 	}
 	if(dir==DIRN_STOP){
-		//her må vi vel kalle stopp funksjonen vår
+		elev_set_motor_direction(DIRN_STOP);
 		int sum=0;
 		for(int i=floor+1, i<N_FLOORS, i++){
 			if(orderqueue[i][BUTTON_CALL_UP]|| orderqueue[i][BUTTON_COMMAND] || orderqueue[i][BUTTON_CALL_DOWN]){
@@ -56,7 +56,7 @@ void check_floor(int floor, elev_motor_direction_t dir){
 			}
 		}
 		if(sum>0){
-			elev_set_motor_direction(DIRN_UP)
+			elev_set_motor_direction(DIRN_UP);
 			return;
 		}
 
@@ -66,11 +66,12 @@ void check_floor(int floor, elev_motor_direction_t dir){
 			}
 		}
 		if(sum>0){
-			elev_set_motor_direction(DIRN_DOWN)
+			elev_set_motor_direction(DIRN_DOWN);
+			
 			return;
 		}
 
 
 
-}
+	}
 }
