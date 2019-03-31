@@ -1,7 +1,7 @@
 #include "queue.h"
 #include "elev.h"
 
-void insert_order(elev_button_type_t button, int floor){
+void queue_insert_order(elev_button_type_t button, int floor){
 	orderqueue[floor][button]=1;
 }
 
@@ -13,11 +13,11 @@ void delete_queue(){
 	}
 }
 //litt scetchy at floor er blå
-void order_done(elev_button_type_t button, int floor){
+void queue_order_done(elev_button_type_t button, int floor){
 	orderqueue[floor][button];
 }
 
-void check_floor(int floor, elev_motor_direction_t dir){
+void queue_check_floor(int floor, elev_motor_direction_t dir){
 	if(dir==DIRN_UP){
 		if(orderqueue[floor][BUTTON_CALL_UP] || orderqueue[floor][BUTTON_COMMAND]){
 			//her kaller vi stopp funksjonen vår!!
@@ -67,11 +67,15 @@ void check_floor(int floor, elev_motor_direction_t dir){
 		}
 		if(sum>0){
 			elev_set_motor_direction(DIRN_DOWN);
-			
+
 			return;
 		}
-
-
-
+	}
+}
+void queue_set_button_lights(){
+	for(int i=0, i<N_FLOORS, i++){
+		for(int j=0, i<N_BUTTONS, j++){
+			elev_set_button_lamp(j, i, order_queue[i][j]);
+		}
 	}
 }

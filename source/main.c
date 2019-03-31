@@ -13,6 +13,12 @@ int main() {
 
     elev_set_motor_direction(DIRN_UP);
 
+    //variabler??
+    elev_motor_direction_t dir = 0;
+    dir_p = &dir;
+
+    int floor_var;
+
     while (1) {
         // Change direction when we reach top/bottom floor
         if (elev_get_floor_sensor_signal() == N_FLOORS - 1) {
