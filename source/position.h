@@ -1,7 +1,7 @@
 
 
-void set_dir_var(elev_motor_direction_t dir);
-elev_motor_direction_t get_dir_var();
+void set_dir_var(int dir);
+int get_dir_var();
 
 /**
 * Polls order buttons and inserts orders into the queue.
