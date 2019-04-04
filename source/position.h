@@ -1,7 +1,13 @@
 
 
-void set_dir_var(int dir);
-int get_dir_var();
+void position_set_dir(int dir);
+
+int position_get_dir();
+
+
+void position_set_floor(int floor);
+
+int position_get_floor();
 
 /**
 * Polls order buttons and inserts orders into the queue.

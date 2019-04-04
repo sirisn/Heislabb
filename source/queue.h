@@ -24,7 +24,7 @@ void queue_insert_order(int button, int floor);
 * @param[in] floors Floor the elevator was last on.
 * @param[in] dir Direction the elavator is moving.
 */
-//void queue_check_floor(int floor, int dir);
+void queue_check_floor(int floor, int dir);
 
 /**
 * Deletes finished orders from the order queue.
@@ -32,7 +32,7 @@ void queue_insert_order(int button, int floor);
 * @param[in] button Button type belonging to the order.
 * @param[in] floor Floor belonging to the order.
 */
-//void queue_order_done(int button, int floor);
+void queue_order_done(int button, int floor);
 
 /**
 * sets button lights inside and outside the elevator.

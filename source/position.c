@@ -4,6 +4,25 @@
 #include "io.h"
 
 
+int current_floor;
+elev_motor_direction_t direction;
+
+void position_set_dir(int dir){
+	direction = dir;
+}
+
+elev_motor_direction_t position_get_dir(){
+	return direction;
+}
+
+void position_set_floor(int floor){
+	current_floor = floor;
+}
+
+int position_get_floor(){
+	return current_floor;
+}
+
 void position_check_buttons() {
 	for (int i = 0; i < N_FLOORS; i++) {
 		//fiks etterpå
@@ -11,7 +30,8 @@ void position_check_buttons() {
 			if (! ((i == 3) & (j == 0))) {
 				if (! ((i == 0) & (j == 1))) {
 					if (elev_get_button_signal(j,i)) {
-						queue_insert_order(j,i);					}
+						queue_insert_order(j,i);
+					}
 				}
 			}
 		}
@@ -19,11 +39,11 @@ void position_check_buttons() {
 }
 
 
-void position_update_floor(int *floor_p) {
-
-	if (elev_get_floor_sensor_signal() == -1) {
+void position_update_floor() {
+	int floor = elev_get_floor_sensor_signal();
+	if (floor == -1) {
 		return;
 	}
-	*floor_p = elev_get_floor_sensor_signal();
-	elev_set_floor_indicator(*floor_p);
+	position_set_floor(floor);
+	elev_set_floor_indicator(floor);
 }
