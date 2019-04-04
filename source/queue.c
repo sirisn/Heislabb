@@ -2,6 +2,7 @@
 #include "elev.h"
 #include "position.h"
 #include "io.h"
+#include "state.h"
 
 #include <stdio.h>
 
@@ -26,58 +27,50 @@ void queue_order_done(int button, int floor){
 	orderqueue[floor][button] = 0;
 }
 //
-void queue_check_floor(int floor, elev_motor_direction_t dir){
-	if (floor == -1) {
+void queue_check_floor(int floor_var, elev_motor_direction_t dir){
+	if (floor_var == -1) {
 		return;
 	}
 	if(dir==DIRN_UP){
-		if(orderqueue[floor][BUTTON_CALL_UP] || orderqueue[floor][BUTTON_COMMAND]){
-			//her kaller vi stopp funksjonen vår!!
-			printf("running up and hit order\n");
-			queue_order_done(BUTTON_CALL_UP, floor);
-			queue_order_done(BUTTON_COMMAND, floor);
-			queue_order_done(BUTTON_CALL_DOWN, floor);
+		if(orderqueue[floor_var][BUTTON_CALL_UP] || orderqueue[floor_var][BUTTON_COMMAND]){
+			state_set_state(ORDER_STOP);
+			return;
 		}
 		int sum=0;
-		for(int i=floor+1; i<N_FLOORS; i++){
+		for(int i=(floor_var+1); i<N_FLOORS; i++){
 			if(orderqueue[i][BUTTON_CALL_UP] || orderqueue[i][BUTTON_COMMAND] || orderqueue[i][BUTTON_CALL_DOWN]){
 				sum+=1;
 			}
 		}
 		if (sum==0){
 			printf("running down and hit order\n");
-			queue_order_done(BUTTON_CALL_DOWN, floor);
-			queue_order_done(BUTTON_COMMAND, floor);
-			queue_order_done(BUTTON_CALL_DOWN, floor);
-			elev_set_motor_direction(DIRN_STOP);
+			state_set_state(ORDER_STOP);
 			position_set_dir(DIRN_STOP);
 		}
 	}
 	if(dir==DIRN_DOWN){
 
-		if(orderqueue[floor][BUTTON_CALL_DOWN] || orderqueue[floor][BUTTON_COMMAND]){
+		if(orderqueue[floor_var][BUTTON_CALL_DOWN] || orderqueue[floor_var][BUTTON_COMMAND]){
 			printf("running down and hit order\n");
-			queue_order_done(BUTTON_CALL_DOWN, floor);
-			queue_order_done(BUTTON_COMMAND, floor);
-			queue_order_done(BUTTON_CALL_DOWN, floor);
+			state_set_state(ORDER_STOP);
 		 }
 		int sum=0;
-		for(int i=floor-1; i>=0; i--){
+		for(int i=(floor_var-1); i>=0; i--){
 			if(orderqueue[i][BUTTON_CALL_UP] || orderqueue[i][BUTTON_COMMAND] || orderqueue[i][BUTTON_CALL_DOWN]){
 				sum+=1;
 			}
 		}
 		if (sum==0){
 			printf("running down and hit order\n");
-			queue_order_done(BUTTON_CALL_DOWN, floor);
-			queue_order_done(BUTTON_COMMAND, floor);
-			queue_order_done(BUTTON_CALL_DOWN, floor);
-			elev_set_motor_direction(DIRN_STOP);
+			state_set_state(ORDER_STOP);
 			position_set_dir(DIRN_STOP);
 		}
 
 	}
-	if(dir==DIRN_STOP){
+
+}
+
+void queue_check_orderqueue(int floor){
 		int sum=0;
 		for(int i=floor+1; i<N_FLOORS; i++){
 
@@ -88,6 +81,7 @@ void queue_check_floor(int floor, elev_motor_direction_t dir){
 		if(sum>0){
 			elev_set_motor_direction(DIRN_UP);
 			position_set_dir(DIRN_UP);
+			state_set_state(DRIVING);
 			return;
 		}
 		for(int i=0; i<floor; i++){
@@ -98,10 +92,10 @@ void queue_check_floor(int floor, elev_motor_direction_t dir){
 		if(sum>0){
 			elev_set_motor_direction(DIRN_DOWN);
 			position_set_dir(DIRN_DOWN);
-
+			state_set_state(DRIVING);
 			return;
 		}
-	}
+		state_set_state(IDLE);
 }
 
 void queue_set_button_lights(){
@@ -115,3 +109,83 @@ void queue_set_button_lights(){
 		}
 	}
 }
+
+
+
+// void queue_check_floor(int floor, elev_motor_direction_t dir){
+// 	if (floor == -1) {
+// 		return;
+// 	}
+// 	if(dir==DIRN_UP){
+// 		if(orderqueue[floor][BUTTON_CALL_UP] || orderqueue[floor][BUTTON_COMMAND]){
+// 			//her kaller vi stopp funksjonen vår!!
+// 			printf("running up and hit order\n");
+// 			queue_order_done(BUTTON_CALL_UP, floor);
+// 			queue_order_done(BUTTON_COMMAND, floor);
+// 			queue_order_done(BUTTON_CALL_DOWN, floor);
+// 		}
+// 		int sum=0;
+// 		for(int i=floor+1; i<N_FLOORS; i++){
+// 			if(orderqueue[i][BUTTON_CALL_UP] || orderqueue[i][BUTTON_COMMAND] || orderqueue[i][BUTTON_CALL_DOWN]){
+// 				sum+=1;
+// 			}
+// 		}
+// 		if (sum==0){
+// 			printf("running down and hit order\n");
+// 			queue_order_done(BUTTON_CALL_DOWN, floor);
+// 			queue_order_done(BUTTON_COMMAND, floor);
+// 			queue_order_done(BUTTON_CALL_DOWN, floor);
+// 			elev_set_motor_direction(DIRN_STOP);
+// 			position_set_dir(DIRN_STOP);
+// 		}
+// 	}
+// 	if(dir==DIRN_DOWN){
+//
+// 		if(orderqueue[floor][BUTTON_CALL_DOWN] || orderqueue[floor][BUTTON_COMMAND]){
+// 			printf("running down and hit order\n");
+// 			queue_order_done(BUTTON_CALL_DOWN, floor);
+// 			queue_order_done(BUTTON_COMMAND, floor);
+// 			queue_order_done(BUTTON_CALL_DOWN, floor);
+// 		 }
+// 		int sum=0;
+// 		for(int i=floor-1; i>=0; i--){
+// 			if(orderqueue[i][BUTTON_CALL_UP] || orderqueue[i][BUTTON_COMMAND] || orderqueue[i][BUTTON_CALL_DOWN]){
+// 				sum+=1;
+// 			}
+// 		}
+// 		if (sum==0){
+// 			printf("running down and hit order\n");
+// 			queue_order_done(BUTTON_CALL_DOWN, floor);
+// 			queue_order_done(BUTTON_COMMAND, floor);
+// 			queue_order_done(BUTTON_CALL_DOWN, floor);
+// 			elev_set_motor_direction(DIRN_STOP);
+// 			position_set_dir(DIRN_STOP);
+// 		}
+//
+// 	}
+// 	if(dir==DIRN_STOP){
+// 		int sum=0;
+// 		for(int i=floor+1; i<N_FLOORS; i++){
+//
+// 			if(orderqueue[i][BUTTON_CALL_UP]|| orderqueue[i][BUTTON_COMMAND] || orderqueue[i][BUTTON_CALL_DOWN]){
+// 				sum+=1;
+// 			}
+// 		}
+// 		if(sum>0){
+// 			elev_set_motor_direction(DIRN_UP);
+// 			position_set_dir(DIRN_UP);
+// 			return;
+// 		}
+// 		for(int i=0; i<floor; i++){
+// 			if(orderqueue[i][BUTTON_CALL_UP]|| orderqueue[i][BUTTON_COMMAND] || orderqueue[i][BUTTON_CALL_DOWN]){
+// 				sum+=1;
+// 			}
+// 		}
+// 		if(sum>0){
+// 			elev_set_motor_direction(DIRN_DOWN);
+// 			position_set_dir(DIRN_DOWN);
+//
+// 			return;
+// 		}
+// 	}
+// }

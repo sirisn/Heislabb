@@ -38,3 +38,5 @@ void queue_order_done(int button, int floor);
 * sets button lights inside and outside the elevator.
 */
 void queue_set_button_lights();
+
+void queue_check_orderqueue();

@@ -2,6 +2,7 @@
 #include "position.h"
 #include "io.h"
 #include "queue.h"
+#include "state.h"
 #include <stdio.h>
 
 
@@ -31,6 +32,7 @@ int main() {
     //
     // }
     position_set_dir(DIRN_STOP);
+    state_set_state(IDLE);
     while (1) {
         //Change direction when we reach top/bottom floor
         // if (elev_get_floor_sensor_signal() == N_FLOORS - 1) {
@@ -41,12 +43,7 @@ int main() {
         //     position_set_dir(DIRN_UP);
         // }
 
-        position_check_buttons();
-        queue_set_button_lights();
-        position_update_floor();
-        queue_check_floor(position_get_floor(), position_get_dir());
-
-
+        elevator_state();
 
         // Stop elevator and exit program if the stop button is pressed
         if (elev_get_stop_signal()) {
